@@ -1,8 +1,17 @@
-const toDoList = document.getElementById('toDoList');
+const localStorageKey = 'toDoList';
+const toDoListElements = document.getElementById('toDoList');
 const newItemInput = document.getElementById('newItemInput');
+if (!localStorage.getItem(localStorageKey) ){
+    localStorage.setItem(localStorageKey, JSON.stringify([]));
+}
+const toDoList = JSON.parse(localStorage.getItem(localStorageKey));
+render();
 
-function delte(event) {
-    event.target.parentElement.remove();
+function removeToDo(toDoItem) {
+    const indexForDelete = toDoList.indexOf(toDoItem);
+    toDoList.splice(indexForDelete, 1);
+    localStorage.setItem(localStorageKey,JSON.stringify(toDoList));
+    render();
 }
 
 function toggleDone(event) {
@@ -10,15 +19,31 @@ function toggleDone(event) {
 }
 
 function add(){
-    const newItemButton = document.createElement('button');
-    newItemButton.innerText = 'X';
-    newItemButton.addEventListener("click", delte);
-
-    const newItem = document.createElement('li');
-    newItem.addEventListener("click", toggleDone);
-    newItem.innerText = newItemInput.value;
-    newItem.appendChild(newItemButton);
-    toDoList.append(newItem)
-
+    toDoList.push(newItemInput.value);
+    localStorage.setItem(localStorageKey,JSON.stringify(toDoList));
+    render();
     newItemInput.value = '';
-}https://github.com/Boris144/to-do-list.git
+}
+
+function render() {
+    removeAllChildNodes(toDoListElements);
+    toDoList.forEach(toDo =>  {
+        const newItemButton = document.createElement('button');
+        newItemButton.innerText = 'X';
+        newItemButton.addEventListener("click", removeToDo);
+
+        const newItem = document.createElement('li');
+        newItem.addEventListener("click", toggleDone);
+        newItem.innerText = toDo;
+        newItem.appendChild(newItemButton);
+       toDoListElements.append(newItem);
+      })
+    }
+
+    function removeAllChildNodes(parent) {
+        while(parent.firstChild) {
+            parent.removeChild(parent.firstChild)
+        }
+    }
+
+//  https://github.com/Boris144/to-do-list.git
